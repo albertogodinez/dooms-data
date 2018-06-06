@@ -30,18 +30,28 @@ class App {
       })
     });
 
-    router.get('/challongeLogin/:username/:apiKey', (req: Request, res: Response) => {
-      console.log('requesting tournaments')
+    router.get('/tournaments/:username/:apiKey', (req: Request, res: Response) => {
+      console.log('requesting tournaments');
       
       this.challonge.getTournaments(req.params.username, req.params.apiKey, req.query.begDate, req.query.endDate)
         .then(response => {
           res.status(200).send({
             tournaments: response
           })
-        })
-        .catch(error => this.errorHandler.handleWebServiceError(error));
+        }).catch(error => this.errorHandler.handleWebServiceError(error));
     });
 
+    //takes in a list of tournaments
+    router.get('/participants/:tournamentList', (req: Request, res: Response) => {
+      console.log('requesting participans');
+
+      this.challonge.getParticipants(req.params.tournamentList)
+        .then(response => {
+          res.status(200).send({
+            participants: response
+          })
+        }).catch(error => this.errorHandler.handleWebServiceError(error));
+    })
     router.post('/', (req: Request, res: Response) => {
       const data = req.body;
       // query a database and save data
