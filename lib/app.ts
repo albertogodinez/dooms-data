@@ -42,16 +42,19 @@ class App {
     });
 
     //takes in a list of tournaments
-    router.get('/participants/:tournamentList', (req: Request, res: Response) => {
+    //example: http://localhost:4040/tournaments/array=["foo","bar"]
+    router.get('/participants/', (req: Request, res: Response) => {
       console.log('requesting participans');
-
-      this.challonge.getParticipants(req.params.tournamentList)
+      var arr = JSON.parse(req.query.array);
+      console.log('tournamentList: ' + JSON.stringify(arr));
+      this.challonge.getParticipants(arr)
         .then(response => {
           res.status(200).send({
             participants: response
           })
         }).catch(error => this.errorHandler.handleWebServiceError(error));
-    })
+    });
+
     router.post('/', (req: Request, res: Response) => {
       const data = req.body;
       // query a database and save data
