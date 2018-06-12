@@ -1,7 +1,7 @@
-export class MatchesData {
-  matchId: string;
-  winnerId: string;
-  loserId: string;
+export class MatchData {
+  matchId: number;
+  winnerId: number;
+  loserId: number;
   winnerName: string;
   loserName: string;
   tournamentId: string;

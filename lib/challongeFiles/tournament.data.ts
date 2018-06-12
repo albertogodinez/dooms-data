@@ -5,4 +5,5 @@ export class TournamentData {
   tournamentType: string;
   challongeUrl: string;
   state: string;
+  listOfParticipants: string[] = [];
 }

@@ -1,13 +1,14 @@
 export class ParticipantData {
-  participantId: string;
-  gamerTag: string;
-  totalNumTournaments: number;
+  participantId: number;
+  gamertag: string;
+  totalNumTournaments: number = 0;
   firstAttendedDate: Date;
   lastAttendedDate: Date;
   active: Boolean;
-  totalNumWins: number;
-  totalNumLosses: number;
-  totalNumSets: number;
-  numPlayersBeat: number;
-  numPlayersLost: number;
+  totalNumWins: number = 0;
+  totalNumLosses: number = 0;
+  totalNumSets: number = 0;;
+  listOfWins: string[] = [];
+  listOfLosses: string[] = [];
+  listOfTournamentUrls: string[] = [];
 }

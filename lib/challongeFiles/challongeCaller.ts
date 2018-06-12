@@ -1,10 +1,13 @@
 import axios from "axios";
 import { TournamentData } from './tournament.data';
 import { ParticipantData } from './participant.data';
+import { MatchData } from './match.data';
 
 export class ChallongeCaller {
   tournamentList: TournamentData[];
-  participantList: ParticipantData[];
+  participantMap: Map<number, ParticipantData> = new Map(); // key is participantId
+  matchesMap: Map<number, MatchData> = new Map(); // key is matchId
+  
   //TODO: NEED TO OBTAIN JUST THE TOURNAMENTS THAT THEY ARE USING
   //THIS SHOULD HAPPEN WHENEVER THEY ARE GETTING PARTICIPANTS
 
@@ -33,41 +36,9 @@ export class ChallongeCaller {
   }
   
   public getParticipants(tournamentList){
-   // console.log('getParticipants() -- calling participant urls: ' + url);
-  // console.log('\n\n');
    console.log('current api: ' + this.api);
    console.log('current username: ' + this.username);
 
-    // tournamentList.forEach(tournamentID => {
-    //   let url = `https://${this.username}:${this.api}@api.challonge.com/v1/tournaments/${tournamentID}/participants.json`;
-    //   console.log('getParticipants() calling challonge -- url: ' + url);
-    //   return axios.get(url)
-    //   .then(response => {
-    //     return this.handleParticipants(response.data);
-    //   })
-    //   .catch(ex => this.handleError(ex));
-    // })
-
-    //let linksArr = ['https://jsonplaceholder.typicode.com/posts', 'https://jsonplaceholder.typicode.com/comments'];
-
-    // return axios.all(tournamentList.map(tournamentID => {
-    //   axios.get(`https://${this.username}:${this.api}@api.challonge.com/v1/tournaments/${tournamentID}/participants.json`)
-    //   // .then(response => {
-    //   //   console.log('0');
-    //   //   return this.handleParticipants(response.data);
-    //   // })
-    //   .catch(ex => this.handleError(ex));
-    // }))
-    //   .then(axios.spread(function (...res) {
-    //     // all requests are now complete
-    //     console.log('1');
-    //     console.log('getParticipants() response is now ready');
-    //     //console.log(res.length);
-    //     console.log("current response: " + res);
-    //     return this.handleParticipants(res);
-    //     //return this.participantList;
-    // }))
-    // .catch(ex => this.handleError(ex));
     let promises = [];
 
     for (let i = 0; i < tournamentList.length; i++) {
@@ -77,41 +48,110 @@ export class ChallongeCaller {
     .then(axios.spread((...args) => {
         for (let i = 0; i < args.length; i++) {
           this.handleParticipants(args[i].data);
-            //console.log('current data: ' + JSON.stringify(args[i].data));
         }
+        let values = Array.from( this.participantMap.values() );
+        //console.log('returning participantData array: ' + JSON.stringify(values));
+        return values;
     }))
-    .then(value => this.participantList);
-    // async function test(){
-    //   await Promise.all(tournamentList.map(async (tournamentId) => {
-    //     let url = `https://${this.username}:${this.api}@api.challonge.com/v1/tournaments/${tournamentID}/participants.json`;
-    //     let result = await axios.get(url);
-    //     this.handleParticipants(result);
-    //     console.log(result);
-    //   }));
-    //   console.log('after foreach');
-    // }
-
-  //.then(response => {return Promise.resolve(this.participantList)});
-    //let participantPromise = new Promise
-    //return this.participantList;
+    .catch(err => this.handleError(err));
   }
 
-  private handleParticipants(responseData: any) {
-    //console.log('handling participant response: ' + JSON.stringify(responseData));
-    var mapped = responseData.map(participant => {
-      //console.log('participant: ' + JSON.stringify(participant));
-      let pd = new ParticipantData();
-      pd.participantId = participant.participant.id;
-      pd.gamerTag = participant.participant.name;
-      return pd;
+  logMapElements(value, key, map) {
+    console.log(`m[${key}] = ${JSON.stringify(value)}`);
+  }
+
+  public updateParticipants(updatedParticipants: ParticipantData[]) {
+    updatedParticipants.forEach(updatedParticipant => {
+      //updates gamertag to whatever user inputed
+      console.log('previous gamertag: ' + this.participantMap.get(updatedParticipant.participantId).gamertag + ' updating to the following gamertag: ' + updatedParticipant.gamertag);
+      this.participantMap.get(updatedParticipant.participantId).gamertag = updatedParticipant.gamertag;
     });
-    if(!this.participantList || this.participantList.length === 0) {
-      this.participantList = mapped;
-    } else {
-      this.participantList.push(...mapped);
+    console.log('updateParticipants() returning: ---- ');
+    this.participantMap.forEach(this.logMapElements);
+
+    let values = Array.from( this.participantMap.values() );
+    return values;
+  }
+
+  public getMatches(tournamentList) {
+    let promises = [];
+
+    for (let i = 0; i < tournamentList.length; i++) {
+        promises.push(axios.get(`https://${this.username}:${this.api}@api.challonge.com/v1/tournaments/${tournamentList[i]}/matches.json`));
     }
-    console.log('CURRENT PARTICIPANT LIST' + JSON.stringify(this.participantList));
-    return this.participantList;
+    return axios.all(promises)
+    .then(axios.spread((...args) => {
+        for (let i = 0; i < args.length; i++) {
+          this.handleMatches(args[i].data);
+        }
+        let values = Array.from( this.matchesMap.values() );
+        //console.log('returning participantData array: ' + JSON.stringify(values));
+        return values;
+    }))
+    .catch(err => this.handleError(err));
+  }
+
+  /*
+  * *********** HELPERS ***********
+  * Classes meant to help edit data class
+  */
+  public getParticipantProfiles() {
+    this.matchesMap.forEach(match => {
+      let pdWinner: ParticipantData = this.participantMap.get(match.winnerId);
+      let pdLoser: ParticipantData = this.participantMap.get(match.loserId);
+      pdWinner.listOfWins.push(pdLoser.gamertag);
+      pdWinner.totalNumSets++;
+      pdWinner.totalNumWins++;
+
+      pdLoser.listOfLosses.push(pdWinner.gamertag);
+      pdLoser.totalNumSets++;
+      pdLoser.totalNumLosses++;
+      
+      this.participantMap.set(match.winnerId, pdWinner);
+      this.participantMap.set(match.loserId, pdLoser);
+    })
+    let values = Array.from( this.participantMap.values() );
+    return values;
+  }
+
+  private findParticipantByGamertag(gamertag: string): ParticipantData {
+    for(let participant of this.participantMap.values()) {
+      if(participant.gamertag === gamertag) {
+        return participant;
+      }
+    }
+    return null;
+  }
+  /*
+  * *********** HANDLERS ***********
+  * Help handle data received from challonge
+  */
+
+  private handleMatches(responseData: any) {
+    console.log('converting challonge response to MatchData')
+    responseData.map(match => {
+      let md: MatchData = new MatchData();
+      md.matchId = match.match.id;
+      md.winnerId = match.match.winner_id;
+      md.loserId = match.match.loser_id;
+      this.matchesMap.set(md.matchId, md);
+    });
+  }
+
+  //need to go through existing participants and see if gamertag exists
+  //if it does, then need to add it to that ParticipantData
+  private handleParticipants(responseData: any) {
+    console.log('converting challonge response to ParticipantData');
+    responseData.map(participant => {
+      let pd = this.findParticipantByGamertag(participant.participant.name);
+      if(!pd) {
+        pd = new ParticipantData();
+      }
+      pd.participantId = participant.participant.id;
+      pd.gamertag = participant.participant.name;
+      pd.totalNumTournaments++;
+      this.participantMap.set(pd.participantId, pd);
+    });
   }
 
   private handleTournaments(responseData: any) {
