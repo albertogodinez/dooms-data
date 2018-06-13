@@ -96,7 +96,9 @@ export class ChallongeCaller {
   * Classes meant to help edit data class
   */
   public getParticipantProfiles() {
+    console.log('obtaining participant profiles');
     this.matchesMap.forEach(match => {
+      console.log('matchId: ' + match.matchId);
       let pdWinner: ParticipantData = this.participantMap.get(match.winnerId);
       let pdLoser: ParticipantData = this.participantMap.get(match.loserId);
       pdWinner.listOfWins.push(pdLoser.gamertag);
@@ -110,11 +112,43 @@ export class ChallongeCaller {
       this.participantMap.set(match.winnerId, pdWinner);
       this.participantMap.set(match.loserId, pdLoser);
     })
+    console.log('matches have been finished');
+    //COMBINE PARTICIPANTS WITH SAME GAMERTAG
+    this.participantMap.forEach(participant => {
+      let dupParticipantID = this.findDuplicateParticipantByGamertag(participant);
+      if(dupParticipantID) {
+        this.combineTwoParticipants(participant, this.participantMap.get(dupParticipantID));
+        this.participantMap.set(participant.participantId, participant);
+      }
+    });
     let values = Array.from( this.participantMap.values() );
     return values;
   }
 
+  //returns key of duplicate
+  private findDuplicateParticipantByGamertag(participant: ParticipantData): number {
+    console.log('findDuplicateParticipantByGamertag()');
+    for(let currPd of this.participantMap.values()) {
+      if(currPd.gamertag === participant.gamertag && currPd.participantId !== participant.participantId) {
+        return currPd.participantId;
+      }
+    }
+    return null;
+  }
+
+  private combineTwoParticipants(participant: ParticipantData, participantRemove: ParticipantData) {
+    console.log('participants being combined: ' + JSON.stringify(participant) + "  -----  " + JSON.stringify(participantRemove));
+    participant.listOfWins.push(...participantRemove.listOfWins);
+    participant.listOfLosses.push(...participantRemove.listOfLosses);
+    participant.totalNumSets += participantRemove.totalNumSets;
+    participant.totalNumWins += participantRemove.totalNumWins;
+    participant.totalNumLosses += participantRemove.totalNumLosses;
+    participant.totalNumTournaments += participantRemove.totalNumTournaments;
+    this.participantMap.delete(participantRemove.participantId);
+  }
+
   private findParticipantByGamertag(gamertag: string): ParticipantData {
+    console.log('findParticipantByGamertag()');
     for(let participant of this.participantMap.values()) {
       if(participant.gamertag === gamertag) {
         return participant;
@@ -143,10 +177,7 @@ export class ChallongeCaller {
   private handleParticipants(responseData: any) {
     console.log('converting challonge response to ParticipantData');
     responseData.map(participant => {
-      let pd = this.findParticipantByGamertag(participant.participant.name);
-      if(!pd) {
-        pd = new ParticipantData();
-      }
+      let pd = new ParticipantData();
       pd.participantId = participant.participant.id;
       pd.gamertag = participant.participant.name;
       pd.totalNumTournaments++;
