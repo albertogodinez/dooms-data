@@ -2,12 +2,16 @@
   "name": "doombot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/server/index.js",
   "scripts": {
-    "build": "tsc",
-    "dev": "ts-node ./src/server/lib/server.ts",
     "start": "node ./src/server/dist/server.js",
-    "prod": "npm run build && npm start"
+    "previous-build": "tsc",
+    "build": "webpack --mode production",
+    "server": "nodemon src/server/lib/server.ts",
+    "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
+    "previous-dev": "ts-node ./src/server/lib/server.ts",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "previous-prod": "npm run build && npm start"
   },
   "keywords": [],
   "author": "",
