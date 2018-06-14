@@ -5,13 +5,11 @@
     "pretty": true,
     "sourceMap": true,
     "target": "es6",
-    "outDir": "./dist", // creates the dist directory & places compiles files here
-    "baseUrl": "./lib"
+    "outDir": "./src/server/dist", // creates the dist directory & places compiles files here
+    "baseUrl": "./src/server/lib"
   },
   "include": [
-    "lib/**/*.ts" // specifies that we should include all ts files within lib
+    "./src/server/lib/**/*.ts" // specifies that we should include all ts files within lib
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }
