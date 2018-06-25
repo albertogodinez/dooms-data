@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 import { TournamentData } from './tournament.data';
 import { ParticipantData } from './participant.data';
 import { MatchData } from './match.data';
@@ -7,7 +7,7 @@ export class ChallongeCaller {
   tournamentList: TournamentData[];
   participantMap: Map<number, ParticipantData> = new Map(); // key is participantId
   matchesMap: Map<number, MatchData> = new Map(); // key is matchId
-  
+
   //TODO: NEED TO OBTAIN JUST THE TOURNAMENTS THAT THEY ARE USING
   //THIS SHOULD HAPPEN WHENEVER THEY ARE GETTING PARTICIPANTS
 
@@ -16,44 +16,54 @@ export class ChallongeCaller {
   private api: string;
   private username: string;
 
-  public getTournaments(username: string, apiKey: string, begDate?: Date, endDate?: Date) {
+  public getTournaments(username: string, apiKey: string, begDate?: string, endDate?: string) {
     console.log('getTournaments created_after date+ ' + begDate);
     console.log('getTournaments created_before date+ ' + endDate);
     this.username = username;
     this.api = apiKey;
     let url = `https://${username}:${apiKey}@api.challonge.com/v1/tournaments.json`;
-    return axios.get(url, {
-      params: {
-        created_after: begDate,
-        created_before: endDate
-      }
-    })
-    .then(response => {
-      //console.log('getTournaments() response from challonge: ' + response.data);
-      return this.handleTournaments(response.data);
-    })
-    .catch(ex => this.handleError(ex))
+    return axios
+      .get(url, {
+        params: {
+          created_after: begDate,
+          created_before: endDate,
+        },
+      })
+      .then(response => {
+        //console.log('getTournaments() response from challonge: ' + response.data);
+        return this.handleTournaments(response.data);
+      })
+      .catch(ex => this.handleError(ex));
   }
-  
-  public getParticipants(tournamentList){
-   console.log('current api: ' + this.api);
-   console.log('current username: ' + this.username);
+
+  public getParticipants(tournamentList) {
+    console.log('current api: ' + this.api);
+    console.log('current username: ' + this.username);
 
     let promises = [];
 
     for (let i = 0; i < tournamentList.length; i++) {
-        promises.push(axios.get(`https://${this.username}:${this.api}@api.challonge.com/v1/tournaments/${tournamentList[i]}/participants.json`));
+      promises.push(
+        axios.get(
+          `https://${this.username}:${this.api}@api.challonge.com/v1/tournaments/${
+            tournamentList[i]
+          }/participants.json`,
+        ),
+      );
     }
-    return axios.all(promises)
-    .then(axios.spread((...args) => {
-        for (let i = 0; i < args.length; i++) {
-          this.handleParticipants(args[i].data);
-        }
-        let values = Array.from( this.participantMap.values() );
-        //console.log('returning participantData array: ' + JSON.stringify(values));
-        return values;
-    }))
-    .catch(err => this.handleError(err));
+    return axios
+      .all(promises)
+      .then(
+        axios.spread((...args) => {
+          for (let i = 0; i < args.length; i++) {
+            this.handleParticipants(args[i].data);
+          }
+          let values = Array.from(this.participantMap.values());
+          //console.log('returning participantData array: ' + JSON.stringify(values));
+          return values;
+        }),
+      )
+      .catch(err => this.handleError(err));
   }
 
   logMapElements(value, key, map) {
@@ -63,13 +73,19 @@ export class ChallongeCaller {
   public updateParticipants(updatedParticipants: ParticipantData[]) {
     updatedParticipants.forEach(updatedParticipant => {
       //updates gamertag to whatever user inputed
-      console.log('previous gamertag: ' + this.participantMap.get(updatedParticipant.participantId).gamertag + ' updating to the following gamertag: ' + updatedParticipant.gamertag);
-      this.participantMap.get(updatedParticipant.participantId).gamertag = updatedParticipant.gamertag;
+      console.log(
+        'previous gamertag: ' +
+          this.participantMap.get(updatedParticipant.participantId).gamertag +
+          ' updating to the following gamertag: ' +
+          updatedParticipant.gamertag,
+      );
+      this.participantMap.get(updatedParticipant.participantId).gamertag =
+        updatedParticipant.gamertag;
     });
     console.log('updateParticipants() returning: ---- ');
     this.participantMap.forEach(this.logMapElements);
 
-    let values = Array.from( this.participantMap.values() );
+    let values = Array.from(this.participantMap.values());
     return values;
   }
 
@@ -77,18 +93,27 @@ export class ChallongeCaller {
     let promises = [];
 
     for (let i = 0; i < tournamentList.length; i++) {
-        promises.push(axios.get(`https://${this.username}:${this.api}@api.challonge.com/v1/tournaments/${tournamentList[i]}/matches.json`));
+      promises.push(
+        axios.get(
+          `https://${this.username}:${this.api}@api.challonge.com/v1/tournaments/${
+            tournamentList[i]
+          }/matches.json`,
+        ),
+      );
     }
-    return axios.all(promises)
-    .then(axios.spread((...args) => {
-        for (let i = 0; i < args.length; i++) {
-          this.handleMatches(args[i].data);
-        }
-        let values = Array.from( this.matchesMap.values() );
-        //console.log('returning participantData array: ' + JSON.stringify(values));
-        return values;
-    }))
-    .catch(err => this.handleError(err));
+    return axios
+      .all(promises)
+      .then(
+        axios.spread((...args) => {
+          for (let i = 0; i < args.length; i++) {
+            this.handleMatches(args[i].data);
+          }
+          let values = Array.from(this.matchesMap.values());
+          //console.log('returning participantData array: ' + JSON.stringify(values));
+          return values;
+        }),
+      )
+      .catch(err => this.handleError(err));
   }
 
   /*
@@ -108,28 +133,31 @@ export class ChallongeCaller {
       pdLoser.listOfLosses.push(pdWinner.gamertag);
       pdLoser.totalNumSets++;
       pdLoser.totalNumLosses++;
-      
+
       this.participantMap.set(match.winnerId, pdWinner);
       this.participantMap.set(match.loserId, pdLoser);
-    })
+    });
     console.log('matches have been finished');
     //COMBINE PARTICIPANTS WITH SAME GAMERTAG
     this.participantMap.forEach(participant => {
       let dupParticipantID = this.findDuplicateParticipantByGamertag(participant);
-      if(dupParticipantID) {
+      if (dupParticipantID) {
         this.combineTwoParticipants(participant, this.participantMap.get(dupParticipantID));
         this.participantMap.set(participant.participantId, participant);
       }
     });
-    let values = Array.from( this.participantMap.values() );
+    let values = Array.from(this.participantMap.values());
     return values;
   }
 
   //returns key of duplicate
   private findDuplicateParticipantByGamertag(participant: ParticipantData): number {
     console.log('findDuplicateParticipantByGamertag()');
-    for(let currPd of this.participantMap.values()) {
-      if(currPd.gamertag === participant.gamertag && currPd.participantId !== participant.participantId) {
+    for (let currPd of this.participantMap.values()) {
+      if (
+        currPd.gamertag === participant.gamertag &&
+        currPd.participantId !== participant.participantId
+      ) {
         return currPd.participantId;
       }
     }
@@ -137,7 +165,12 @@ export class ChallongeCaller {
   }
 
   private combineTwoParticipants(participant: ParticipantData, participantRemove: ParticipantData) {
-    console.log('participants being combined: ' + JSON.stringify(participant) + "  -----  " + JSON.stringify(participantRemove));
+    console.log(
+      'participants being combined: ' +
+        JSON.stringify(participant) +
+        '  -----  ' +
+        JSON.stringify(participantRemove),
+    );
     participant.listOfWins.push(...participantRemove.listOfWins);
     participant.listOfLosses.push(...participantRemove.listOfLosses);
     participant.totalNumSets += participantRemove.totalNumSets;
@@ -149,8 +182,8 @@ export class ChallongeCaller {
 
   private findParticipantByGamertag(gamertag: string): ParticipantData {
     console.log('findParticipantByGamertag()');
-    for(let participant of this.participantMap.values()) {
-      if(participant.gamertag === gamertag) {
+    for (let participant of this.participantMap.values()) {
+      if (participant.gamertag === gamertag) {
         return participant;
       }
     }
@@ -162,7 +195,7 @@ export class ChallongeCaller {
   */
 
   private handleMatches(responseData: any) {
-    console.log('converting challonge response to MatchData')
+    console.log('converting challonge response to MatchData');
     responseData.map(match => {
       let md: MatchData = new MatchData();
       md.matchId = match.match.id;
@@ -195,7 +228,7 @@ export class ChallongeCaller {
       td.state = elem.tournament.state;
       td.tournamentDate = elem.tournament.created_at;
       return td;
-    })
+    });
     //console.log('tournaments have been handled: returning the following: ' + JSON.stringify(this.tournamentList));
     return this.tournamentList;
   }
