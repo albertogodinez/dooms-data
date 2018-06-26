@@ -52,7 +52,7 @@ export default class CredentialsPage extends Component {
       },
     }).then((response) => {
       if (response.data) {
-        console.log(response);
+        // console.log(response);
         this.props.changeView(response.data);
       }
     });
