@@ -58,7 +58,7 @@ export default class TournamentsPage extends Component {
     }).then((response) => {
       if (response.data) {
         // console.log(response);
-        this.props.changeView(response.data);
+        this.props.changeView(response.data, this.state.selectedTournamentIds);
       }
     });
   }

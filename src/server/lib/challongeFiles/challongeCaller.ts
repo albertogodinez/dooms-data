@@ -195,6 +195,7 @@ export class ChallongeCaller {
   */
 
   private handleMatches(responseData: any) {
+    //console.log('responseData: ' + JSON.stringify(responseData));
     console.log('converting challonge response to MatchData');
     responseData.map(match => {
       let md: MatchData = new MatchData();
@@ -233,7 +234,7 @@ export class ChallongeCaller {
     return this.tournamentList;
   }
 
-  private handleError(error: Response) {
+  private handleError(error: Error) {
     console.log('error occured in challongCaller: ' + error);
   }
 }

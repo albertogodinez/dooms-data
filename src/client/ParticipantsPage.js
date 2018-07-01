@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { List, Modal, Button } from 'antd';
+import { List, Modal, Button, Menu, Dropdown, Icon } from 'antd';
 // import { Card, Icon, Col, Row, Button } from 'antd';
 
 const listStyle = {
@@ -23,12 +23,12 @@ export default class ParticipantsPage extends Component {
   }
 
   showModal(item) {
-    // console.log(JSON.stringify(item));
+    // console.log(`showModal(): ${JSON.stringify(item)}`);
     this.setState({
       visible: true,
       selectedParticipant: item,
     });
-    console.log(JSON.stringify(this.state.selectedParticipant));
+    // console.log(JSON.stringify(this.state.selectedParticipant));
   }
 
   handleOk() {
@@ -38,7 +38,7 @@ export default class ParticipantsPage extends Component {
       this.setState({
         loading: false,
         visible: false,
-        selectedParticipant: null,
+        // selectedParticipant: null,
       });
     }, 3000);
   }
@@ -47,16 +47,27 @@ export default class ParticipantsPage extends Component {
     console.log('got to here');
     this.setState({
       visible: false,
-      selectedParticipant: null,
+      // selectedParticipant: null,
     });
   }
 
   renderModal() {
-    let modal1;
+    let modal;
+    const menu = (
+      <Menu>
+        {this.props.participantData.map((participant, i) => {
+          if (participant !== undefined) {
+            console.log(`participant.gamertag; ${participant.gamertag} key: ${i}`);
+              <Menu.Item key={i}>{participant.gamertag}</Menu.Item>;
+          }
+        })}
+      </Menu>
+    );
 
     if (this.state.selectedParticipant) {
-      console.log(`selectedParticipant:${JSON.stringify(this.state.selectedParticipant.gamertag)}`);
-      modal1 = (
+      // console.log(`selectedParticipant: ${JSON.stringify(this.state.selectedParticipant)}`);
+      // console.log(`participantData size: ${this.props.participantData.length}`);
+      modal = (
         <Modal
           visible={this.state.visible}
           title={this.state.selectedParticipant.gamertag}
@@ -77,10 +88,15 @@ export default class ParticipantsPage extends Component {
           ]}
         >
           <p>Edit Player</p>
+          <Dropdown overlay={menu} trigger={['click']}>
+            <a className="ant-dropdown-link" href="#">
+              Select Player<Icon type="down" />
+            </a>
+          </Dropdown>
         </Modal>
       );
     }
-    return modal1;
+    return modal;
   }
 
   render() {

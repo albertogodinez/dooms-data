@@ -1,21 +1,9 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import './app.css';
 import { CredentialsPageForm } from './CredentialsPage';
 import TournamentsPage from './TournamentsPage';
-import ParticipantsPage from './ParticipantsPage';
-
-// const handlers = {
-//   initLoad: value => <CredentialsPageForm />,
-// };
-
-// const displayData = (type, value) => {
-//   const handler = handlers[type] || handlers.default;
-//   return handler(value);
-// };
-
-// const DataDisplay = ({ type, value }) => {
-//   displayData(type, value);
-// };
+import ParticipantProfilesPage from './ParticipantProfilesPage';
 
 export default class App extends Component {
   constructor(props) {
@@ -24,13 +12,43 @@ export default class App extends Component {
       view: 'displayCredentialsForm',
       tournamentData: [],
       participantData: [],
+      selectedTournamentIds: [],
+      participantProfiles: [],
     };
     // this.handler = this.handler.bind(this);
+    this.displayParticipantProfiles = this.displayParticipantProfiles.bind(this);
   }
 
   componentDidMount() {
     // fetch('/api/getUsername').then(res => res.json());
     // .then(user => this.setState({ username: user.username }));
+  }
+
+  getParticipantProfiles() {
+    console.log('handling submit');
+    const rootUrl = 'http://localhost:4040/';
+    axios({
+      url: `${rootUrl}matches/?tournamentList=[${this.state.selectedTournamentIds}]`,
+      method: 'get',
+    }).then((matches) => {
+      if (matches.data) {
+        console.log('getting playerProfiles');
+        axios({
+          url: `${rootUrl}playerProfiles/`,
+          method: 'get',
+        }).then((response) => {
+          if (response.data) {
+            console.log(`Player Profiles: ${JSON.stringify(response.data)}`);
+            this.setState({
+              view: 'displayParticipantProfiles',
+              participantProfiles: response.data.playerProfiles,
+            });
+            // displayParticipantProfiles(response.data);
+          }
+        });
+        // this.props.changeView(response.data);
+      }
+    });
   }
 
   displayTournaments(td) {
@@ -39,15 +57,24 @@ export default class App extends Component {
       view: 'displayTournaments',
       tournamentData: td.tournaments,
     });
-    console.log(`in displayTournaments: ${JSON.stringify(this.state.tournamentData)}`);
+    // console.log(`in displayTournaments: ${JSON.stringify(this.state.tournamentData)}`);
   }
 
-  displayParticipants(pd) {
+  displayParticipants(pd, tList) {
     this.setState({
-      view: 'displayParticipants',
+      // view: 'displayParticipants',
       participantData: pd.participants,
+      selectedTournamentIds: tList,
     });
-    console.log(`in displayParticipants: ${JSON.stringify(pd.participants)}`);
+    // console.log(`in displayParticipants: ${JSON.stringify(pd.participants)}`);
+    this.getParticipantProfiles();
+  }
+
+  displayParticipantProfiles(ptcpntPro) {
+    this.setState({
+      view: 'displayParticipantProfiles',
+      participantProfiles: ptcpntPro.playerProfiles,
+    });
   }
 
   render() {
@@ -63,8 +90,11 @@ export default class App extends Component {
             changeView={this.displayParticipants.bind(this)}
           />
         ) : null}
-        {view === 'displayParticipants' ? (
+        {/* {view === 'displayParticipants' ? (
           <ParticipantsPage participantData={this.state.participantData} />
+        ) : null} */}
+        {view === 'displayParticipantProfiles' ? (
+          <ParticipantProfilesPage participantProfiles={this.state.participantProfiles} />
         ) : null}
       </div>
     );
