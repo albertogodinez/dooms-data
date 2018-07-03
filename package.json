@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/client/index.js",
   "scripts": {
+    "heroku-prebuild": "npm build",
     "start": "node src/server/dist/server.js",
     "build": "webpack --mode production",
     "server": "nodemon src/server/lib/server.ts",
