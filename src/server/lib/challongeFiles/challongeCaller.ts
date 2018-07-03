@@ -17,6 +17,9 @@ export class ChallongeCaller {
   private username: string;
 
   public getTournaments(username: string, apiKey: string, begDate?: string, endDate?: string) {
+    //if (this.tournamentList !== undefined) {
+    this.resetData;
+    //}
     console.log('getTournaments created_after date+ ' + begDate);
     console.log('getTournaments created_before date+ ' + endDate);
     this.username = username;
@@ -134,6 +137,9 @@ export class ChallongeCaller {
       pdLoser.totalNumSets++;
       pdLoser.totalNumLosses++;
 
+      pdWinner.winningPercentage = (pdWinner.totalNumWins / pdWinner.totalNumSets) * 100;
+      pdLoser.winningPercentage = (pdLoser.totalNumWins / pdLoser.totalNumSets) * 100;
+
       this.participantMap.set(match.winnerId, pdWinner);
       this.participantMap.set(match.loserId, pdLoser);
     });
@@ -220,18 +226,32 @@ export class ChallongeCaller {
   }
 
   private handleTournaments(responseData: any) {
-    this.tournamentList = responseData.map(function(elem) {
-      const td: TournamentData = new TournamentData();
-      td.tournamentId = elem.tournament.id;
-      td.tournamentName = elem.tournament.name;
-      td.tournamentType = elem.tournament.tournament_type;
-      td.challongeUrl = elem.tournament.full_challonge_url;
-      td.state = elem.tournament.state;
-      td.tournamentDate = elem.tournament.created_at;
-      return td;
-    });
+    this.tournamentList = responseData
+      .filter(elem => {
+        // edit this or create a constant
+        return elem.tournament.state === 'complete';
+      })
+      .map(function(elem) {
+        //console.log('adding tournament - ' + elem.tournament.name);
+        const td: TournamentData = new TournamentData();
+        td.tournamentId = elem.tournament.id;
+        td.tournamentName = elem.tournament.name;
+        td.tournamentType = elem.tournament.tournament_type;
+        td.challongeUrl = elem.tournament.full_challonge_url;
+        td.state = elem.tournament.state;
+        td.tournamentDate = elem.tournament.created_at;
+        return td;
+      });
     //console.log('tournaments have been handled: returning the following: ' + JSON.stringify(this.tournamentList));
     return this.tournamentList;
+  }
+
+  //TODO: this is temporary.
+  //reseting data when starting from the beginning
+  private resetData() {
+    this.tournamentList = [];
+    this.participantMap = new Map();
+    this.matchesMap = new Map();
   }
 
   private handleError(error: Error) {

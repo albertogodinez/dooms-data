@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Form, Icon, Input, Button } from 'antd';
+import { Row, Col, Form, Icon, Input, Button } from 'antd';
 
 const FormItem = Form.Item;
 
@@ -48,14 +48,19 @@ export default class CredentialsPage extends Component {
       method: 'get',
       headers: {
         begDate: '2018-01-01', // don't hard code this in the future
-        endDate: '2018-07-01', // don't hard code these in the future
+        endDate: '2018-07-01', // don't hard code this in the future
       },
-    }).then((response) => {
-      if (response.data) {
-        // console.log(response);
-        this.props.changeView(response.data);
-      }
-    });
+    })
+      .then((response) => {
+        if (response.data) {
+          // console.log(`response from init sign in: ${JSON.stringify(response)}`);
+          this.props.changeView(response.data);
+        }
+      })
+      .catch((ex) => {
+        // TODO: Convert this into it's own component
+        alert('error occurred. Refresh and try again');
+      });
   }
 
   render() {
@@ -67,29 +72,35 @@ export default class CredentialsPage extends Component {
     const userNameError = isFieldTouched('username') && getFieldError('username');
     const apiError = isFieldTouched('apiKey') && getFieldError('apiKey');
     return (
-      <Form layout="inline" onSubmit={this.handleSubmit}>
-        <FormItem validateStatus={userNameError ? 'error' : ''} help={userNameError || ''}>
-          {getFieldDecorator('username', {
-            rules: [{ required: true, message: 'Please input your username' }],
-          })(<Input
-            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-            placeholder="Username"
-          />)}
-        </FormItem>
-        <FormItem validateStatus={apiError ? 'error' : ''} help={apiError || ''}>
-          {getFieldDecorator('apiKey', {
-            rules: [{ required: true, message: 'Please input your API key' }],
-          })(<Input
-            prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-            placeholder="API Key"
-          />)}
-        </FormItem>
-        <FormItem>
-          <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
-            Submit
-          </Button>
-        </FormItem>
-      </Form>
+      <div>
+        <Row>
+          <Col span={8} offset={8}>
+            <Form layout="inline" onSubmit={this.handleSubmit}>
+              <FormItem validateStatus={userNameError ? 'error' : ''} help={userNameError || ''}>
+                {getFieldDecorator('username', {
+                  rules: [{ required: true, message: 'Please input your username' }],
+                })(<Input
+                  prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  placeholder="Username"
+                />)}
+              </FormItem>
+              <FormItem validateStatus={apiError ? 'error' : ''} help={apiError || ''}>
+                {getFieldDecorator('apiKey', {
+                  rules: [{ required: true, message: 'Please input your API key' }],
+                })(<Input
+                  prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  placeholder="API Key"
+                />)}
+              </FormItem>
+              <FormItem>
+                <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
+                  Submit
+                </Button>
+              </FormItem>
+            </Form>
+          </Col>
+        </Row>
+      </div>
     );
   }
 }

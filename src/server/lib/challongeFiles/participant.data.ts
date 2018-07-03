@@ -7,8 +7,9 @@ export class ParticipantData {
   active: Boolean;
   totalNumWins: number = 0;
   totalNumLosses: number = 0;
-  totalNumSets: number = 0;;
+  totalNumSets: number = 0;
   listOfWins: string[] = [];
   listOfLosses: string[] = [];
   listOfTournamentUrls: string[] = [];
+  winningPercentage: number = 0;
 }

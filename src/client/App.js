@@ -38,15 +38,13 @@ export default class App extends Component {
           method: 'get',
         }).then((response) => {
           if (response.data) {
-            console.log(`Player Profiles: ${JSON.stringify(response.data)}`);
+            // console.log(`Player Profiles: ${JSON.stringify(response.data)}`);
             this.setState({
               view: 'displayParticipantProfiles',
               participantProfiles: response.data.playerProfiles,
             });
-            // displayParticipantProfiles(response.data);
           }
         });
-        // this.props.changeView(response.data);
       }
     });
   }
