@@ -4,8 +4,7 @@
   "description": "",
   "main": "src/client/index.js",
   "scripts": {
-    "old-start": "node src/server/dist/server.js",
-    "start": "src/server/lib/server.ts",
+    "start": "node src/server/dist/server.js",
     "build": "webpack --mode production",
     "server": "nodemon src/server/lib/server.ts",
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
