@@ -4,7 +4,6 @@
   "description": "",
   "main": "src/client/index.js",
   "scripts": {
-    "prestart": "npm run-script build",
     "start": "node src/server/dist/server.js",
     "build": "webpack --mode production",
     "server": "nodemon src/server/lib/server.ts",
