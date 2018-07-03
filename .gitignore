@@ -3,3 +3,6 @@ server.log
 package-lock.json
 src/server/dist/
 .vscode/
+npm-debug.log
+.DS_Store
+/*.env
