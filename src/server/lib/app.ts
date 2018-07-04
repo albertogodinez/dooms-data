@@ -5,6 +5,8 @@ import { ChallongeCaller } from './challongeFiles/challongeCaller';
 import { ErrorHandler } from './errorHandler';
 import * as cors from 'cors';
 
+const path = require('path');
+
 class App {
   private challonge = new ChallongeCaller();
   private errorHandler = new ErrorHandler();
