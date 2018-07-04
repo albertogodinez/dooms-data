@@ -1,7 +1,7 @@
 node_modules/
 server.log
 package-lock.json
-src/server/dist/
+dist/
 .vscode/
 npm-debug.log
 .DS_Store
