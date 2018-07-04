@@ -22,10 +22,10 @@ class App {
   private config(): void {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
-    this.app.use(
-      express.static(path.join(__dirname, '../../client'), { index: false })
-    );
-    console.log(JSON.stringify(__dirname) + '../../client/');
+
+    let joinedPath = path.join(__dirname, '../../client');
+    // console.log('joined path: ' + joinedPath);
+    this.app.use(express.static(path.join(__dirname, '../../client')));
     this.app.use(cors());
   }
 
