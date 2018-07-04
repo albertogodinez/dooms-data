@@ -5,7 +5,9 @@
   "main": "src/client/index.js",
   "scripts": {
     "start": "node src/server/dist/server.js",
+    "heroku-postbuild": "concurrently \"npm run build\" \"npm run tsc\"",
     "build": "webpack --mode production",
+    "tsc": "tsc",
     "server": "nodemon src/server/lib/server.ts",
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
     "dev": "concurrently \"npm run server\" \"npm run client\""
@@ -26,7 +28,8 @@
     "express": "^4.16.3",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
-    "react-dom": "^16.4.1"
+    "react-dom": "^16.4.1",
+    "typescript": "^2.9.2"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
