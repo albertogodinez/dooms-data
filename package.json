@@ -7,7 +7,7 @@
     "tsc": "tsc",
     "build": "node src/server/dist/server.js",
     "start": "npm run tsc && npm run build",
-    "heroku-postbuild": "webpack --mode production; tsc --project=tsconfig.json",
+    "heroku-postbuild": "webpack --mode production; tsc -p ./tsconfig.json",
     "server": "nodemon src/server/lib/server.ts",
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
     "dev": "concurrently \"npm run server\" \"npm run client\""
