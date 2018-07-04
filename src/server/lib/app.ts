@@ -25,6 +25,7 @@ class App {
     this.app.use(
       express.static(path.join(__dirname, '../../client'), { index: false })
     );
+    console.log(JSON.stringify(__dirname) + '../../client/');
     this.app.use(cors());
   }
 
