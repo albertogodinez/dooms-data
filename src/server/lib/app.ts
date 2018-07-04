@@ -20,6 +20,9 @@ class App {
   private config(): void {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
+    this.app.use(
+      express.static(path.join(__dirname, '../../client'), { index: false })
+    );
     this.app.use(cors());
   }
 
@@ -28,27 +31,30 @@ class App {
 
     router.get('/', (req: Request, res: Response) => {
       res.status(200).send({
-        message: 'Hello World!',
+        message: 'Hello World!'
       });
     });
 
-    router.get('/tournaments/:username/:apiKey', (req: Request, res: Response) => {
-      console.log('requesting tournaments');
+    router.get(
+      '/tournaments/:username/:apiKey',
+      (req: Request, res: Response) => {
+        console.log('requesting tournaments');
 
-      this.challonge
-        .getTournaments(
-          req.params.username,
-          req.params.apiKey,
-          req.get('begDate'),
-          req.get('endDate'),
-        )
-        .then(response => {
-          res.status(200).send({
-            tournaments: response,
-          });
-        })
-        .catch(error => this.errorHandler.handleWebServiceError(error));
-    });
+        this.challonge
+          .getTournaments(
+            req.params.username,
+            req.params.apiKey,
+            req.get('begDate'),
+            req.get('endDate')
+          )
+          .then(response => {
+            res.status(200).send({
+              tournaments: response
+            });
+          })
+          .catch(error => this.errorHandler.handleWebServiceError(error));
+      }
+    );
 
     //takes in a list of tournaments
     //example: http://localhost:4040/participants/?array=["foo","bar"]
@@ -61,7 +67,7 @@ class App {
         .getParticipants(tournamentList)
         .then(response => {
           res.status(200).send({
-            participants: response,
+            participants: response
           });
         })
         .catch(error => this.errorHandler.handleWebServiceError(error));
@@ -73,12 +79,18 @@ class App {
       console.log('updating participants');
       let tempParticipants = req.query.updatedParticipants;
       console.log('tempParticpants: ' + JSON.stringify(tempParticipants));
-      console.log('req.query: ' + JSON.stringify(req.query.updatedParticipants));
+      console.log(
+        'req.query: ' + JSON.stringify(req.query.updatedParticipants)
+      );
       let updatedParticipants = JSON.parse(req.query.updatedParticipants);
       console.log('got after updatedParticipants was initialized');
-      console.log('updatedParticipants: ' + JSON.stringify(updatedParticipants[0]));
+      console.log(
+        'updatedParticipants: ' + JSON.stringify(updatedParticipants[0])
+      );
       res.status(200).send({
-        updatedParticipants: this.challonge.updateParticipants(updatedParticipants),
+        updatedParticipants: this.challonge.updateParticipants(
+          updatedParticipants
+        )
       });
     });
 
@@ -87,14 +99,14 @@ class App {
       var tournamentList = JSON.parse(req.query.tournamentList);
       this.challonge.getMatches(tournamentList).then(response => {
         res.status(200).send({
-          matches: response,
+          matches: response
         });
       });
     });
 
     router.get('/playerProfiles/', (req: Request, res: Response) => {
       res.status(200).send({
-        playerProfiles: this.challonge.getParticipantProfiles(), //TODO: Seperate this from the challonge class
+        playerProfiles: this.challonge.getParticipantProfiles() //TODO: Seperate this from the challonge class
       });
     });
 
