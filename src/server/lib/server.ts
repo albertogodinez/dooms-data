@@ -8,10 +8,7 @@ const appRoot = require('app-root-path');
 const port = process.env.PORT || 4040;
 
 const initialise = async () => {
-  console.log('in production');
-  // app.get('/', (req, res) => {
-  //   res.sendFile(path.join(appRoot + '/build/bundle.js'), { magAge: 0 });
-  // });
+  console.log('current environment - ' + process.env.NODE_ENV);
 
   app.use(
     express.static(path.join(appRoot + '/build'), { index: 'index.html' })
