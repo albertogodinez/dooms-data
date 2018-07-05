@@ -2,7 +2,7 @@
   "name": "doombot",
   "version": "1.0.0",
   "description": "",
-  "main": "src/client/index.js",
+  "main": "index.js",
   "scripts": {
     "tsc": "tsc",
     "build": "node src/server/dist/server.js",
