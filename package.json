@@ -2,10 +2,10 @@
   "name": "doombot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/client/index.js",
   "scripts": {
     "tsc": "tsc",
-    "start": "node src/server/dist/server.js",
+    "start": "set NODE_ENV=production&& node src/server/dist/server.js",
     "heroku-postbuild": "webpack --config webpack.prod.js; tsc -p ./tsconfig.json",
     "server": "nodemon src/server/lib/server.ts",
     "client": "webpack-dev-server --open --config webpack.dev.js",

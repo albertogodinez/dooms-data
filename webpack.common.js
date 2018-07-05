@@ -4,7 +4,12 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: './src/client/index.js',
-  plugins: [new CleanWebpackPlugin(['build']), new HtmlWebpackPlugin()],
+  plugins: [
+    new CleanWebpackPlugin(['build']),
+    new HtmlWebpackPlugin({
+      template: './public/index.html'
+    })
+  ],
   module: {
     rules: [
       {

@@ -13,10 +13,12 @@ export default class App extends Component {
       tournamentData: [],
       participantData: [],
       selectedTournamentIds: [],
-      participantProfiles: [],
+      participantProfiles: []
     };
     // this.handler = this.handler.bind(this);
-    this.displayParticipantProfiles = this.displayParticipantProfiles.bind(this);
+    this.displayParticipantProfiles = this.displayParticipantProfiles.bind(
+      this
+    );
   }
 
   componentDidMount() {
@@ -26,22 +28,25 @@ export default class App extends Component {
 
   getParticipantProfiles() {
     console.log('handling submit');
-    const rootUrl = 'http://localhost:4040/';
+    // const rootUrl = 'http://localhost:4040/';
+    const rootUrl = '/api/';
     axios({
-      url: `${rootUrl}matches/?tournamentList=[${this.state.selectedTournamentIds}]`,
-      method: 'get',
-    }).then((matches) => {
+      url: `${rootUrl}matches/?tournamentList=[${
+        this.state.selectedTournamentIds
+      }]`,
+      method: 'get'
+    }).then(matches => {
       if (matches.data) {
         console.log('getting playerProfiles');
         axios({
           url: `${rootUrl}playerProfiles/`,
-          method: 'get',
-        }).then((response) => {
+          method: 'get'
+        }).then(response => {
           if (response.data) {
             // console.log(`Player Profiles: ${JSON.stringify(response.data)}`);
             this.setState({
               view: 'displayParticipantProfiles',
-              participantProfiles: response.data.playerProfiles,
+              participantProfiles: response.data.playerProfiles
             });
           }
         });
@@ -53,7 +58,7 @@ export default class App extends Component {
     // e.preventDefault();
     this.setState({
       view: 'displayTournaments',
-      tournamentData: td.tournaments,
+      tournamentData: td.tournaments
     });
     // console.log(`in displayTournaments: ${JSON.stringify(this.state.tournamentData)}`);
   }
@@ -62,7 +67,7 @@ export default class App extends Component {
     this.setState({
       // view: 'displayParticipants',
       participantData: pd.participants,
-      selectedTournamentIds: tList,
+      selectedTournamentIds: tList
     });
     // console.log(`in displayParticipants: ${JSON.stringify(pd.participants)}`);
     this.getParticipantProfiles();
@@ -71,7 +76,7 @@ export default class App extends Component {
   displayParticipantProfiles(ptcpntPro) {
     this.setState({
       view: 'displayParticipantProfiles',
-      participantProfiles: ptcpntPro.playerProfiles,
+      participantProfiles: ptcpntPro.playerProfiles
     });
   }
 
@@ -80,7 +85,9 @@ export default class App extends Component {
     return (
       <div>
         {view === 'displayCredentialsForm' ? (
-          <CredentialsPageForm changeView={this.displayTournaments.bind(this)} />
+          <CredentialsPageForm
+            changeView={this.displayTournaments.bind(this)}
+          />
         ) : null}
         {view === 'displayTournaments' ? (
           <TournamentsPage
@@ -92,7 +99,9 @@ export default class App extends Component {
           <ParticipantsPage participantData={this.state.participantData} />
         ) : null} */}
         {view === 'displayParticipantProfiles' ? (
-          <ParticipantProfilesPage participantProfiles={this.state.participantProfiles} />
+          <ParticipantProfilesPage
+            participantProfiles={this.state.participantProfiles}
+          />
         ) : null}
       </div>
     );

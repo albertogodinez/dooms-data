@@ -22,18 +22,20 @@ class App {
   private config(): void {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
-
-    // let joinedPath = path.join(__dirname, '../../client');
-    // console.log('joined path: ' + joinedPath);
     this.app.use(cors());
-    //  app.use(express.static(path.join(__dirname, 'client/build')));
   }
 
   private routes(): void {
     const router = express.Router();
 
+    // router.get('/', (req: Request, res: Response) => {
+    //   res.status(200).send({
+    //     message: 'Hello World!'
+    //   });
+    // });
+
     router.get(
-      '/tournaments/:username/:apiKey',
+      '/api/tournaments/:username/:apiKey',
       (req: Request, res: Response) => {
         console.log('requesting tournaments');
 
@@ -55,7 +57,7 @@ class App {
 
     //takes in a list of tournaments
     //example: http://localhost:4040/participants/?array=["foo","bar"]
-    router.get('/participants/', (req: Request, res: Response) => {
+    router.get('/api/participants/', (req: Request, res: Response) => {
       console.log('requesting participants');
       console.log('req.query: ' + JSON.stringify(req.query.array));
       var tournamentList = JSON.parse(req.query.tournamentList);
@@ -72,7 +74,7 @@ class App {
 
     //takes in an optional list of participant gamertag changes
     //example: http://localhost:4040/participants/update/?updatedParticipants=[{participantId: 'ID', gamertag: 'newTag'}]
-    router.get('/participants/update/', (req: Request, res: Response) => {
+    router.get('/api/participants/update/', (req: Request, res: Response) => {
       console.log('updating participants');
       let tempParticipants = req.query.updatedParticipants;
       console.log('tempParticpants: ' + JSON.stringify(tempParticipants));
@@ -91,7 +93,7 @@ class App {
       });
     });
 
-    router.get('/matches/', (req: Request, res: Response) => {
+    router.get('/api/matches/', (req: Request, res: Response) => {
       console.log('requesting matches');
       var tournamentList = JSON.parse(req.query.tournamentList);
       this.challonge.getMatches(tournamentList).then(response => {
@@ -101,7 +103,7 @@ class App {
       });
     });
 
-    router.get('/playerProfiles/', (req: Request, res: Response) => {
+    router.get('/api/playerProfiles/', (req: Request, res: Response) => {
       res.status(200).send({
         playerProfiles: this.challonge.getParticipantProfiles() //TODO: Seperate this from the challonge class
       });
