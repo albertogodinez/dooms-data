@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   entry: './src/client/index.js',
   plugins: [
-    new CleanWebpackPlugin(['dist']),
+    new CleanWebpackPlugin(['build']),
     new HtmlWebpackPlugin({
       template: './public/index.html'
     })
@@ -24,5 +24,9 @@ module.exports = {
         use: ['style-loader', 'css-loader']
       }
     ]
+  },
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'build')
   }
 };

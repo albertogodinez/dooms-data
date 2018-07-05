@@ -11,9 +11,5 @@ module.exports = merge(common, {
     proxy: {
       '/api': 'http://localhost:4040'
     }
-  },
-  output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist')
   }
 });

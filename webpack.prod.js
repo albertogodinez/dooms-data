@@ -14,9 +14,5 @@ module.exports = merge(common, {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     })
-  ],
-  output: {
-    filename: '[name].[hash].bundle.js',
-    path: path.resolve(__dirname, 'dist')
-  }
+  ]
 });
