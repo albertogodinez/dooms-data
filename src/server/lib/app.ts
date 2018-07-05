@@ -26,7 +26,7 @@ class App {
     // let joinedPath = path.join(__dirname, '../../client');
     // console.log('joined path: ' + joinedPath);
     this.app.use(cors());
-    this.app.use(express.static(path.join(__dirname, 'dist')));
+    this.app.use(express.static(__dirname + '/public'));
     //  app.use(express.static(path.join(__dirname, 'client/build')));
   }
 
