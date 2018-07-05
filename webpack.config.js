@@ -48,7 +48,6 @@ module.exports = (env, argv) => {
 
   if (argv.mode === 'production') {
     console.log('webpack -- development');
-    //...
   }
 
   return config;
