@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "tsc": "tsc",
-    "build": "node src/server/build/server.js",
+    "build": "node src/server/dist/server.js",
     "start": "npm run tsc && npm run build",
     "heroku-postbuild": "webpack --config webpack.prod.js; tsc -p ./tsconfig.json",
     "server": "nodemon src/server/lib/server.ts",

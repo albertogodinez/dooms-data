@@ -3,7 +3,8 @@ const express = require('express');
 const path = require('path');
 const port = process.env.PORT || 4040;
 
-app.use(express.static(__dirname + '../../../public'));
+app.use(express.static(path.join(__dirname + '../../../../public')));
+console.log('path joined: ' + path.join(__dirname + '../../../../public'));
 app.get('*', function(request, response) {
   response.sendFile(path.resolve(__dirname, 'public', 'index.html'));
 });
