@@ -124,7 +124,7 @@ export default class TournamentsPage extends Component {
     console.log('handling submit');
     const rootUrl =
       process.env.NODE_ENV === 'production'
-        ? '/api'
+        ? '/api/'
         : 'http://localhost:4040/api/';
     // const rootUrl = 'http://localhost:4040/';
     // const rootUrl = '/api/';

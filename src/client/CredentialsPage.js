@@ -47,7 +47,7 @@ export default class CredentialsPage extends Component {
     // const rootUrl = '/api/';
     const rootUrl =
       process.env.NODE_ENV === 'production'
-        ? '/api'
+        ? '/api/'
         : 'http://localhost:4040/api/';
     axios({
       url: `${rootUrl}tournaments/${this.state.username}/${this.state.apiKey}`,
