@@ -43,9 +43,12 @@ export default class CredentialsPage extends Component {
       }
     });
 
-    // '/api/tournaments/:username/:apiKey',
     // const rootUrl = 'http://localhost:4040/';
-    const rootUrl = '/api/';
+    // const rootUrl = '/api/';
+    const rootUrl =
+      process.env.NODE_ENV === 'production'
+        ? '/api'
+        : 'http://localhost:4040/api/';
     axios({
       url: `${rootUrl}tournaments/${this.state.username}/${this.state.apiKey}`,
       method: 'get',

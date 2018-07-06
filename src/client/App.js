@@ -28,8 +28,12 @@ export default class App extends Component {
 
   getParticipantProfiles() {
     console.log('handling submit');
-    // const rootUrl = 'http://localhost:4040/';
-    const rootUrl = '/api/';
+    const rootUrl =
+      process.env.NODE_ENV === 'production'
+        ? '/api'
+        : 'http://localhost:4040/api/';
+    // const rootUrl = 'http://localhost:4040/api/';
+    // const rootUrl = '/api/';
     axios({
       url: `${rootUrl}matches/?tournamentList=[${
         this.state.selectedTournamentIds

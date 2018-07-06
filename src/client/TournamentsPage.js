@@ -122,8 +122,12 @@ export default class TournamentsPage extends Component {
   handleSubmit(event) {
     event.preventDefault();
     console.log('handling submit');
+    const rootUrl =
+      process.env.NODE_ENV === 'production'
+        ? '/api'
+        : 'http://localhost:4040/api/';
     // const rootUrl = 'http://localhost:4040/';
-    const rootUrl = '/api/';
+    // const rootUrl = '/api/';
     axios({
       url: `${rootUrl}participants/?tournamentList=[${
         this.state.selectedTournamentIds
