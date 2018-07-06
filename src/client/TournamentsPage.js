@@ -163,6 +163,15 @@ export default class TournamentsPage extends Component {
         </Row>
         <Row>
           <Col offset={2}>
+            <br />
+            <label>
+              Selected Tournaments:{' '}
+              {JSON.stringify(this.state.selectedTournamentIds)}
+            </label>
+          </Col>
+        </Row>
+        <Row>
+          <Col offset={2}>
             <br /> <br />
             <Button
               htmlType="submit"

@@ -28,12 +28,6 @@ class App {
   private routes(): void {
     const router = express.Router();
 
-    // router.get('/', (req: Request, res: Response) => {
-    //   res.status(200).send({
-    //     message: 'Hello World!'
-    //   });
-    // });
-
     router.get(
       '/api/tournaments/:username/:apiKey',
       (req: Request, res: Response) => {
