@@ -28,39 +28,37 @@ class App {
   private routes(): void {
     const router = express.Router();
 
-    router.get(
-      '/api/tournaments/:username/:apiKey',
-      (req: Request, res: Response) => {
-        console.log('requesting tournaments');
-
-        this.challonge
-          .getTournaments(
-            req.params.username,
-            req.params.apiKey,
-            req.get('begDate'),
-            req.get('endDate')
-          )
-          .then(response => {
-            res.status(200).send({
-              tournaments: response
-            });
-          })
-          .catch(error => this.errorHandler.handleWebServiceError(error));
-      }
-    );
+    router.get('/api/tournaments/:username/:apiKey', (req: Request, res: Response) => {
+      console.log('requesting tournaments');
+      this.challonge
+        .getTournaments(
+          req.params.username,
+          req.params.apiKey,
+          req.get('begDate'),
+          req.get('endDate'),
+        )
+        .then(response => {
+          res.status(200).send({
+            tournaments: response,
+          });
+        })
+        .catch(error => this.errorHandler.handleWebServiceError(error));
+    });
 
     //takes in a list of tournaments
     //example: http://localhost:4040/participants/?array=["foo","bar"]
+    /*
+    * Currently this method is not being used
+    */
     router.get('/api/participants/', (req: Request, res: Response) => {
       console.log('requesting participants');
       console.log('req.query: ' + JSON.stringify(req.query.array));
       var tournamentList = JSON.parse(req.query.tournamentList);
-      //console.log('tournamentList: ' + JSON.stringify(arr));
       this.challonge
         .getParticipants(tournamentList)
         .then(response => {
           res.status(200).send({
-            participants: response
+            participants: response,
           });
         })
         .catch(error => this.errorHandler.handleWebServiceError(error));
@@ -70,38 +68,50 @@ class App {
     //example: http://localhost:4040/participants/update/?updatedParticipants=[{participantId: 'ID', gamertag: 'newTag'}]
     router.get('/api/participants/update/', (req: Request, res: Response) => {
       console.log('updating participants');
-      let tempParticipants = req.query.updatedParticipants;
-      console.log('tempParticpants: ' + JSON.stringify(tempParticipants));
-      console.log(
-        'req.query: ' + JSON.stringify(req.query.updatedParticipants)
-      );
       let updatedParticipants = JSON.parse(req.query.updatedParticipants);
-      console.log('got after updatedParticipants was initialized');
-      console.log(
-        'updatedParticipants: ' + JSON.stringify(updatedParticipants[0])
-      );
+      console.log('updatedParticipants: ' + JSON.stringify(updatedParticipants[0]));
       res.status(200).send({
-        updatedParticipants: this.challonge.updateParticipants(
-          updatedParticipants
-        )
+        updatedParticipants: this.challonge.updateParticipants(updatedParticipants),
       });
     });
 
+    /*
+    * Currently this method is not being used
+    * If used, you need to obtain the participants first
+    */
     router.get('/api/matches/', (req: Request, res: Response) => {
       console.log('requesting matches');
       var tournamentList = JSON.parse(req.query.tournamentList);
       this.challonge.getMatches(tournamentList).then(response => {
         res.status(200).send({
-          matches: response
+          matches: response,
         });
       });
     });
 
+    //takes in a list of tournaments
+    //example: http://localhost:4040/api/participants/?array=["tournament1","tournament2"]
     router.get('/api/playerProfiles/', (req: Request, res: Response) => {
-      res.status(200).send({
-        playerProfiles: this.challonge.getParticipantProfiles() //TODO: Seperate this from the challonge class
+      var tournamentList = JSON.parse(req.query.tournamentList);
+      //Validates that tournament list was sent
+      if (!tournamentList || tournamentList.length === 0) {
+        console.log('no tournament list was sent');
+        res.status(400).send({
+          message: 'No tournament list was sent',
+        });
+      }
+      console.log('obtaining player profiles for following tournaments: ' + tournamentList);
+      this.challonge.getParticipantProfiles(tournamentList).then(response => {
+        // console.log('response from getParticipantProfiles: ' + JSON.stringify(response));
+        res.status(200).send({
+          playerProfiles: response,
+        });
       });
+      // res.status(200).send({
+      //   playerProfiles: this.challonge.getParticipantProfiles(tournamentList),
+      // });
     });
+    router.get('/api/');
 
     router.post('/', (req: Request, res: Response) => {
       const data = req.body;

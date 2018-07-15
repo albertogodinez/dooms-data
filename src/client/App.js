@@ -4,6 +4,7 @@ import './app.css';
 import { CredentialsPageForm } from './CredentialsPage';
 import TournamentsPage from './TournamentsPage';
 import ParticipantProfilesPage from './ParticipantProfilesPage';
+// import HeadToHeadPage from './HeadToHeadPage';
 
 export default class App extends Component {
   constructor(props) {
@@ -11,14 +12,11 @@ export default class App extends Component {
     this.state = {
       view: 'displayCredentialsForm',
       tournamentData: [],
-      participantData: [],
       selectedTournamentIds: [],
-      participantProfiles: []
+      participantProfiles: [],
     };
     // this.handler = this.handler.bind(this);
-    this.displayParticipantProfiles = this.displayParticipantProfiles.bind(
-      this
-    );
+    this.displayParticipantProfiles = this.displayParticipantProfiles.bind(this);
   }
 
   componentDidMount() {
@@ -28,59 +26,38 @@ export default class App extends Component {
 
   getParticipantProfiles() {
     console.log('handling submit');
-    const rootUrl =
-      process.env.NODE_ENV === 'production'
-        ? '/api/'
-        : 'http://localhost:4040/api/';
-    // const rootUrl = 'http://localhost:4040/api/';
-    // const rootUrl = '/api/';
+    const rootUrl = process.env.NODE_ENV === 'production' ? '/api/' : 'http://localhost:4040/api/';
     axios({
-      url: `${rootUrl}matches/?tournamentList=[${
-        this.state.selectedTournamentIds
-      }]`,
-      method: 'get'
-    }).then(matches => {
-      if (matches.data) {
-        console.log('getting playerProfiles');
-        axios({
-          url: `${rootUrl}playerProfiles/`,
-          method: 'get'
-        }).then(response => {
-          if (response.data) {
-            // console.log(`Player Profiles: ${JSON.stringify(response.data)}`);
-            this.setState({
-              view: 'displayParticipantProfiles',
-              participantProfiles: response.data.playerProfiles
-            });
-          }
+      url: `${rootUrl}playerProfiles/?tournamentList=[${this.state.selectedTournamentIds}]`,
+      method: 'get',
+    }).then((response) => {
+      if (response.data) {
+        this.setState({
+          view: 'displayParticipantProfiles',
+          participantProfiles: response.data.playerProfiles,
         });
       }
     });
   }
 
   displayTournaments(td) {
-    // e.preventDefault();
     this.setState({
       view: 'displayTournaments',
-      tournamentData: td.tournaments
+      tournamentData: td.tournaments,
     });
-    // console.log(`in displayTournaments: ${JSON.stringify(this.state.tournamentData)}`);
   }
 
   displayParticipants(pd, tList) {
     this.setState({
-      // view: 'displayParticipants',
-      participantData: pd.participants,
-      selectedTournamentIds: tList
+      selectedTournamentIds: tList,
     });
-    // console.log(`in displayParticipants: ${JSON.stringify(pd.participants)}`);
     this.getParticipantProfiles();
   }
 
   displayParticipantProfiles(ptcpntPro) {
     this.setState({
       view: 'displayParticipantProfiles',
-      participantProfiles: ptcpntPro.playerProfiles
+      participantProfiles: ptcpntPro.playerProfiles,
     });
   }
 
@@ -89,9 +66,7 @@ export default class App extends Component {
     return (
       <div>
         {view === 'displayCredentialsForm' ? (
-          <CredentialsPageForm
-            changeView={this.displayTournaments.bind(this)}
-          />
+          <CredentialsPageForm changeView={this.displayTournaments.bind(this)} />
         ) : null}
         {view === 'displayTournaments' ? (
           <TournamentsPage
@@ -103,10 +78,11 @@ export default class App extends Component {
           <ParticipantsPage participantData={this.state.participantData} />
         ) : null} */}
         {view === 'displayParticipantProfiles' ? (
-          <ParticipantProfilesPage
-            participantProfiles={this.state.participantProfiles}
-          />
+          <ParticipantProfilesPage participantProfiles={this.state.participantProfiles} />
         ) : null}
+        {/* {view === 'displayHeadToHead' ? (
+          <HeadToHeadPage participantProfiles={this.state.participantProfiles} />
+        ) : null} */}
       </div>
     );
   }

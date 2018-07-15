@@ -15,7 +15,7 @@ export default class CredentialsPage extends Component {
     super(props);
     this.state = {
       username: '',
-      apiKey: ''
+      apiKey: '',
     };
 
     // this.handleChange = this.handleChange.bind(this);
