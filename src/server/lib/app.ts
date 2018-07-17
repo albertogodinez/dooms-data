@@ -77,7 +77,7 @@ class App {
 
     /*
     * Currently this method is not being used
-    * If used, you need to obtain the participants first
+    * If used, you need to obtain the participants
     */
     router.get('/api/matches/', (req: Request, res: Response) => {
       console.log('requesting matches');

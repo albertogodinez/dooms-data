@@ -2,26 +2,20 @@ import axios from 'axios';
 import { TournamentData } from './tournament.data';
 import { ParticipantData } from './participant.data';
 import { MatchData } from './match.data';
+import { Credentials } from '../credentials';
 
 export class ChallongeCaller {
   tournamentList: TournamentData[];
   participantMap: Map<number, ParticipantData> = new Map(); // key is participantId
   matchesMap: Map<number, MatchData> = new Map(); // key is matchId
   temporaryValues: any[];
-
-  //TODO: STORE THESE VALUES IN A SEPERATE FILE
-  //where we hold all of the constants
-  private api: string;
-  private username: string;
+  credentials: Credentials = new Credentials();
 
   public getTournaments(username: string, apiKey: string, begDate?: string, endDate?: string) {
-    //if (this.tournamentList !== undefined) {
     this.resetData;
     //}
     console.log('getTournaments created_after date+ ' + begDate);
     console.log('getTournaments created_before date+ ' + endDate);
-    this.username = username;
-    this.api = apiKey;
     let url = `https://${username}:${apiKey}@api.challonge.com/v1/tournaments.json`;
     return axios
       .get(url, {
@@ -31,24 +25,26 @@ export class ChallongeCaller {
         },
       })
       .then(response => {
-        //console.log('getTournaments() response from challonge: ' + response.data);
+        console.log('setting apiKey: ' + apiKey + '  AND username: ' + username);
+        this.credentials.challongeApiKey = apiKey;
+        this.credentials.challongeUsername = username;
         return this.handleTournaments(response.data);
       })
-      .catch(ex => this.handleError(ex));
+      .catch(err => this.handleError('getTournaments()', err));
   }
 
   getParticipants(tournamentList) {
-    console.log('current api: ' + this.api);
-    console.log('current username: ' + this.username);
+    console.log('current api: ' + this.credentials.challongeApiKey);
+    console.log('current username: ' + this.credentials.challongeUsername);
 
     let promises = [];
 
     for (let i = 0; i < tournamentList.length; i++) {
       promises.push(
         axios.get(
-          `https://${this.username}:${this.api}@api.challonge.com/v1/tournaments/${
-            tournamentList[i]
-          }/participants.json`,
+          `https://${this.credentials.challongeUsername}:${
+            this.credentials.challongeApiKey
+          }@api.challonge.com/v1/tournaments/${tournamentList[i]}/participants.json`,
         ),
       );
     }
@@ -60,11 +56,10 @@ export class ChallongeCaller {
             this.handleParticipants(args[i].data);
           }
           let values = Array.from(this.participantMap.values());
-          // console.log('returning participantData array: ' + JSON.stringify(values));
           return values;
         }),
       )
-      .catch(err => this.handleError(err));
+      .catch(err => this.handleError('getParticipants()', err));
   }
 
   logMapElements(value, key, map) {
@@ -83,7 +78,6 @@ export class ChallongeCaller {
       this.participantMap.get(updatedParticipant.participantId).gamertag =
         updatedParticipant.gamertag;
     });
-    // console.log('updateParticipants() returning: ---- ');
     this.participantMap.forEach(this.logMapElements);
 
     let values = Array.from(this.participantMap.values());
@@ -97,9 +91,9 @@ export class ChallongeCaller {
     for (let i = 0; i < tournamentList.length; i++) {
       promises.push(
         axios.get(
-          `https://${this.username}:${this.api}@api.challonge.com/v1/tournaments/${
-            tournamentList[i]
-          }/matches.json`,
+          `https://${this.credentials.challongeUsername}:${
+            this.credentials.challongeApiKey
+          }@api.challonge.com/v1/tournaments/${tournamentList[i]}/matches.json`,
         ),
       );
     }
@@ -115,7 +109,7 @@ export class ChallongeCaller {
           return values;
         }),
       )
-      .catch(err => this.handleError(err));
+      .catch(err => this.handleError('getMatches()', err));
   }
 
   /*
@@ -136,7 +130,7 @@ export class ChallongeCaller {
           resolve(participantProfiles);
         })
         .catch(error => {
-          this.handleError(error);
+          this.handleError('getParticipantProfiles()', error);
         });
     });
   }
@@ -253,7 +247,7 @@ export class ChallongeCaller {
     this.matchesMap = new Map();
   }
 
-  private handleError(error: Error) {
-    console.log('error occured in challongCaller: ' + error);
+  private handleError(methodName: string, error: Error) {
+    console.log('error occured in challongCaller: ' + error + '   in method: ' + methodName);
   }
 }

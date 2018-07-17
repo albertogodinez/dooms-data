@@ -4,10 +4,10 @@ import { Card, Icon, Row, Col, Button } from 'antd';
 
 const gridStyle = {
   textAlign: 'center',
-  paddingBottom: '10px'
+  paddingBottom: '10px',
 };
 
-const TournamentCard = props => {
+const TournamentCard = (props) => {
   const date = new Date(props.tournament.tournamentDate);
   // const addTournament = () => {
   //   console.log('addTournament() called');
@@ -23,17 +23,11 @@ const TournamentCard = props => {
         hoverable
         actions={[
           <Button onClick={props.onClick}>
-            {props.selected ? (
-              <Icon type="close-circle" />
-            ) : (
-              <Icon type="check-circle" />
-            )}
-          </Button>
+            {props.selected ? <Icon type="close-circle" /> : <Icon type="check-circle" />}
+          </Button>,
         ]}
       >
-        <p>
-          {/* <strong>Tournament type:</strong> {props.tournament.tournamentType} */}
-        </p>
+        <p>{/* <strong>Tournament type:</strong> {props.tournament.tournamentType} */}</p>
         <p>
           <strong>Tournament date: </strong>
           {date.toLocaleDateString('en-US')}
@@ -51,7 +45,7 @@ export default class TournamentsPage extends Component {
     super(props);
     this.state = {
       tournamentList: [],
-      selectedTournamentIds: []
+      selectedTournamentIds: [],
     };
 
     // this.handleChange = this.handleChange.bind(this);
@@ -71,24 +65,19 @@ export default class TournamentsPage extends Component {
     //     selectedTournamentIds: [...this.state.selectedTournamentIds]
     //   })
     // }
-    const index = this.state.selectedTournamentIds.indexOf(
-      element.tournamentId
-    );
+    const index = this.state.selectedTournamentIds.indexOf(element.tournamentId);
     if (index < 0) {
       // Adding this to selected tournament ids
       console.log(`adding element: ${element.tournamentId}`);
       this.setState({
-        selectedTournamentIds: [
-          ...this.state.selectedTournamentIds,
-          element.tournamentId
-        ]
+        selectedTournamentIds: [...this.state.selectedTournamentIds, element.tournamentId],
       });
     } else {
       console.log(`removing element: ${element.tournamentId}`);
       const updatedSelectedTournaments = [...this.state.selectedTournamentIds];
       updatedSelectedTournaments.splice(index, 1);
       this.setState({
-        selectedTournamentIds: updatedSelectedTournaments
+        selectedTournamentIds: updatedSelectedTournaments,
       });
     }
   }
@@ -100,7 +89,7 @@ export default class TournamentsPage extends Component {
     const index = updatedSelectedTournaments.indexOf(element.tournamentId);
     updatedSelectedTournaments.splice(index, 1);
     this.setState({
-      selectedTournamentIds: updatedSelectedTournaments
+      selectedTournamentIds: updatedSelectedTournaments,
     });
   }
 
@@ -122,18 +111,13 @@ export default class TournamentsPage extends Component {
   handleSubmit(event) {
     event.preventDefault();
     console.log('handling submit');
-    const rootUrl =
-      process.env.NODE_ENV === 'production'
-        ? '/api/'
-        : 'http://localhost:4040/api/';
+    const rootUrl = process.env.NODE_ENV === 'production' ? '/api/' : 'http://localhost:4040/api/';
     // const rootUrl = 'http://localhost:4040/';
     // const rootUrl = '/api/';
     axios({
-      url: `${rootUrl}participants/?tournamentList=[${
-        this.state.selectedTournamentIds
-      }]`,
-      method: 'get'
-    }).then(response => {
+      url: `${rootUrl}participants/?tournamentList=[${this.state.selectedTournamentIds}]`,
+      method: 'get',
+    }).then((response) => {
       if (response.data) {
         // console.log(response);
         this.props.changeView(response.data, this.state.selectedTournamentIds);
@@ -153,9 +137,7 @@ export default class TournamentsPage extends Component {
               onClick={() => {
                 this.onClick(i, e);
               }}
-              selected={
-                this.state.selectedTournamentIds.indexOf(e.tournamentId) >= 0
-              }
+              selected={this.state.selectedTournamentIds.indexOf(e.tournamentId) >= 0}
               // selected={this.tournamentInQueue(e.tournamentId)}
             />
           ))}
@@ -164,10 +146,7 @@ export default class TournamentsPage extends Component {
         <Row>
           <Col offset={2}>
             <br />
-            <label>
-              Selected Tournaments:{' '}
-              {JSON.stringify(this.state.selectedTournamentIds)}
-            </label>
+            <label>Selected Tournaments: {JSON.stringify(this.state.selectedTournamentIds)}</label>
           </Col>
         </Row>
         <Row>
