@@ -12,11 +12,6 @@ const tabList = [
   },
 ];
 
-// const contentList = {
-//   victories: <p>{JSON.stringify(this.selectedParticipant.listOfWins)}</p>,
-//   losses: <p>{JSON.stringify(this.selectedParticipant.listOfLosses)}</p>,
-// };
-
 const ParticipantCard = (props) => {
   const listOfWins = props.state.selectedParticipant.listOfWins;
   const listOfLosses = props.state.selectedParticipant.listOfLosses;
@@ -164,7 +159,7 @@ export default class ParticipantProfilesPage extends Component {
             rowKey={record => record.participantId}
             dataSource={this.props.participantProfiles}
             pagination={{
-              pageSize: 20,
+              pageSize: 50,
               total: this.props.participantProfiles.length,
               showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
             }}

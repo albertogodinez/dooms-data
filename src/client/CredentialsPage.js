@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Row, Col, Form, Icon, Input, Button } from 'antd';
+import PropTypes from 'prop-types';
 
 const FormItem = Form.Item;
 
 function hasErrors(fieldsError) {
   return Object.keys(fieldsError).some(field => fieldsError[field]);
 }
-
-// export default ProfileInterestSkillButtons;
 
 export default class CredentialsPage extends Component {
   constructor(props) {
@@ -17,21 +16,13 @@ export default class CredentialsPage extends Component {
       username: '',
       apiKey: '',
     };
-
-    // this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
     // To disabled submit button at the beginning.
-    this.props.form.validateFields();
+    this.props.form.validateFields(); // automatically sets to props by Form.create()
   }
-
-  // handleChange(event) {
-  //   this.setState({
-  //     [event.target.name]: event.target.value,
-  //   });
-  // }
 
   handleSubmit(event) {
     event.preventDefault();
@@ -43,8 +34,6 @@ export default class CredentialsPage extends Component {
       }
     });
 
-    // const rootUrl = 'http://localhost:4040/';
-    // const rootUrl = '/api/';
     const rootUrl = process.env.NODE_ENV === 'production' ? '/api/' : 'http://localhost:4040/api/';
     axios({
       url: `${rootUrl}tournaments/${this.state.username}/${this.state.apiKey}`,
@@ -56,13 +45,12 @@ export default class CredentialsPage extends Component {
     })
       .then((response) => {
         if (response.data) {
-          // console.log(`response from init sign in: ${JSON.stringify(response)}`);
           this.props.changeView(response.data);
         }
       })
       .catch((ex) => {
         // TODO: Convert this into it's own component
-        alert('error occurred. Refresh and try again');
+        alert(`error occurred. Refresh and try again: ${JSON.stringify(ex)}`);
       });
   }
 
@@ -107,5 +95,13 @@ export default class CredentialsPage extends Component {
     );
   }
 }
+
+CredentialsPage.defaultProps = {
+  changeView: null,
+};
+
+CredentialsPage.propTypes = {
+  changeView: PropTypes.func,
+};
 
 export const CredentialsPageForm = Form.create()(CredentialsPage);

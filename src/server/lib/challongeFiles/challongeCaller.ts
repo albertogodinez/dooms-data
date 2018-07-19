@@ -142,7 +142,7 @@ export class ChallongeCaller {
 
   private handleMatches(responseData: any) {
     //console.log('responseData: ' + JSON.stringify(responseData));
-    console.log('converting challonge response to MatchData');
+    // console.log('converting challonge response to MatchData');
     responseData.map(match => {
       let md: MatchData = new MatchData();
       md.matchId = match.match.id;
@@ -203,6 +203,19 @@ export class ChallongeCaller {
       pdWinner.winningPercentage = (pdWinner.totalNumWins / pdWinner.totalNumSets) * 100;
       pdLoser.winningPercentage = (pdLoser.totalNumWins / pdLoser.totalNumSets) * 100;
 
+      // if (pdWinner.gamertag === 'Jocamo') {
+      //   console.log(
+      //     'winning percentage: ' +
+      //       pdWinner.winningPercentage +
+      //       '   totalSets: ' +
+      //       pdWinner.totalNumSets +
+      //       '  totalWins: ' +
+      //       pdWinner.totalNumWins +
+      //       '    totalLosses: ' +
+      //       pdWinner.totalNumLosses,
+      //   );
+      // }
+
       this.participantMap.set(match.winnerId, pdWinner);
       this.participantMap.set(match.loserId, pdLoser);
     });
@@ -223,6 +236,8 @@ export class ChallongeCaller {
         seen.get(seenKey).totalNumWins += participant.totalNumWins;
         seen.get(seenKey).totalNumLosses += participant.totalNumLosses;
         seen.get(seenKey).totalNumTournaments += participant.totalNumTournaments;
+        seen.get(seenKey).winningPercentage =
+          (seen.get(seenKey).totalNumWins / seen.get(seenKey).totalNumSets) * 100;
         // console.log('combined player: ' + JSON.stringify(seen.get(seenKey)));
       } else {
         let tempKey: string = String(participant.gamertag.toUpperCase().trim());

@@ -15,8 +15,9 @@ export default class App extends Component {
       selectedTournamentIds: [],
       participantProfiles: [],
     };
-    // this.handler = this.handler.bind(this);
     this.displayParticipantProfiles = this.displayParticipantProfiles.bind(this);
+    this.displayTournaments = this.displayTournaments.bind(this);
+    this.displayParticipants = this.displayParticipants.bind(this);
   }
 
   componentDidMount() {
@@ -66,12 +67,12 @@ export default class App extends Component {
     return (
       <div>
         {view === 'displayCredentialsForm' ? (
-          <CredentialsPageForm changeView={this.displayTournaments.bind(this)} />
+          <CredentialsPageForm changeView={this.displayTournaments} />
         ) : null}
         {view === 'displayTournaments' ? (
           <TournamentsPage
             tournamentData={this.state.tournamentData}
-            changeView={this.displayParticipants.bind(this)}
+            changeView={this.displayParticipants}
           />
         ) : null}
         {/* {view === 'displayParticipants' ? (
