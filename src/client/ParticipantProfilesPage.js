@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Table, Card, List, Button, Dropdown, Icon } from 'antd';
+import { Table, Card, List, Button } from 'antd';
+import PropTypes from 'prop-types';
 
 const tabList = [
   {
@@ -60,7 +61,6 @@ const ParticipantCard = (props) => {
             renderItem={item => <List.Item>{item}</List.Item>}
           />
         )}
-        {/* {contentList[props.state.tabKey]} */}
       </Card>
     </Card>
   );
@@ -70,11 +70,8 @@ export default class ParticipantProfilesPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      pagination: [],
       loading: false,
       selectedParticipant: null,
-      sortedInfo: null,
-      tabKey: 'victories',
     };
     this.onClick = this.participantSelected.bind(this);
     this.onBack = this.onBack.bind(this);
@@ -93,28 +90,20 @@ export default class ParticipantProfilesPage extends Component {
 
   participantSelected(participant) {
     console.log(`participant selected: ${JSON.stringify(participant)}`);
-    // const updatedIds = this.state.selectedTournamentIds.con;
-    // console.log(`index: ${index}  element: ${JSON.stringify(element)}`);
     this.setState({
       selectedParticipant: participant,
     });
   }
 
   render() {
-    let { sortedInfo } = this.state;
-    sortedInfo = sortedInfo || {};
     const columns = [
       {
         title: 'Gamertag',
         dataIndex: 'gamertag',
         key: 'gamertag',
         render: gamertag => <a href="javascript:;">{gamertag}</a>,
-        // render: (gamertag) => {
-        //   <a href={this.onClick} target="_blank">
-        //     {gamertag}
-        //   </a>;
-        // },
         width: '20%',
+        // TODO: ADD SORTER FOR NAMES
         // sorter: (a, b) => a.toString().localeCompare(b.toString()),
         // onClick: gamertag => this.onClick(gamertag),
       },
@@ -163,10 +152,10 @@ export default class ParticipantProfilesPage extends Component {
               total: this.props.participantProfiles.length,
               showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
             }}
-            onRow={columns => ({
+            onRow={row => ({
               // Sending columns allows it to send the entire row data
               onClick: () => {
-                this.participantSelected(columns);
+                this.participantSelected(row);
               },
             })}
             loading={this.state.loading}
@@ -188,3 +177,26 @@ export default class ParticipantProfilesPage extends Component {
     );
   }
 }
+
+ParticipantProfilesPage.defaultProps = {
+  participantProfiles: null,
+  changeView: null,
+};
+
+ParticipantProfilesPage.propTypes = {
+  participantProfiles: PropTypes.arrayOf(PropTypes.shape({
+    participantId: PropTypes.number,
+    gamertag: PropTypes.string,
+    totalNumTournaments: PropTypes.number,
+    firstAttendedDate: PropTypes.date,
+    lastAttendedDate: PropTypes.date,
+    active: PropTypes.boolean,
+    totalNumWins: PropTypes.number,
+    totalNumLosses: PropTypes.number,
+    totalNumSets: PropTypes.number,
+    listOfWins: PropTypes.arrayOf(PropTypes.string),
+    listOfLosses: PropTypes.arrayOf(PropTypes.string),
+    listOfTournamentUrls: PropTypes.arrayOf(PropTypes.string),
+    winningPercentage: PropTypes.number,
+  })),
+};

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Card, Icon, Row, Col, Button } from 'antd';
+import PropTypes from 'prop-types';
 
 const gridStyle = {
   textAlign: 'center',
@@ -9,11 +10,6 @@ const gridStyle = {
 
 const TournamentCard = (props) => {
   const date = new Date(props.tournament.tournamentDate);
-  // const addTournament = () => {
-  //   console.log('addTournament() called');
-  //   props.onClick;
-  //   // props.selected = true;
-  // };
   return (
     <Col span={6} offset={1}>
       <Card
@@ -27,12 +23,11 @@ const TournamentCard = (props) => {
           </Button>,
         ]}
       >
-        <p>{/* <strong>Tournament type:</strong> {props.tournament.tournamentType} */}</p>
         <p>
           <strong>Tournament date: </strong>
           {date.toLocaleDateString('en-US')}
         </p>
-        <a href={props.tournament.challongeUrl} target="_blank">
+        <a href={props.tournament.challongeUrl} rel="noopener noreferrer" target="_blank">
           View Bracket
         </a>
       </Card>
@@ -44,27 +39,16 @@ export default class TournamentsPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tournamentList: [],
       selectedTournamentIds: [],
     };
-
-    // this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleTournamentList = this.handleTournamentList.bind(this);
     this.onClick = this.onClick.bind(this);
     this.removeTournament = this.removeTournament.bind(this);
   }
 
-  handleTournamentList() {}
-
   // RENAME THIS
   onClick(i, element) {
     console.log('onClick');
-    // if(this.selectedTournamentIds.length === 0) {
-    //   this.setState({
-    //     selectedTournamentIds: [...this.state.selectedTournamentIds]
-    //   })
-    // }
     const index = this.state.selectedTournamentIds.indexOf(element.tournamentId);
     if (index < 0) {
       // Adding this to selected tournament ids
@@ -94,7 +78,6 @@ export default class TournamentsPage extends Component {
   }
 
   tournamentInQueue(tournamentId) {
-    // console.log(`tournamentId: ${tournamentId}`);
     if (
       this.state.selectedTournamentIds === null ||
       this.state.selectedTournamentIds === undefined
@@ -112,14 +95,11 @@ export default class TournamentsPage extends Component {
     event.preventDefault();
     console.log('handling submit');
     const rootUrl = process.env.NODE_ENV === 'production' ? '/api/' : 'http://localhost:4040/api/';
-    // const rootUrl = 'http://localhost:4040/';
-    // const rootUrl = '/api/';
     axios({
       url: `${rootUrl}participants/?tournamentList=[${this.state.selectedTournamentIds}]`,
       method: 'get',
     }).then((response) => {
       if (response.data) {
-        // console.log(response);
         this.props.changeView(response.data, this.state.selectedTournamentIds);
       }
     });
@@ -133,15 +113,13 @@ export default class TournamentsPage extends Component {
           {this.props.tournamentData.map((e, i) => (
             <TournamentCard
               tournament={e}
-              key={i}
+              key={e.tournamentId}
               onClick={() => {
                 this.onClick(i, e);
               }}
               selected={this.state.selectedTournamentIds.indexOf(e.tournamentId) >= 0}
-              // selected={this.tournamentInQueue(e.tournamentId)}
             />
           ))}
-          {/* <p>state: {JSON.stringify(this.state.selectedTournamentIds)}</p> */}
         </Row>
         <Row>
           <Col offset={2}>
@@ -165,3 +143,21 @@ export default class TournamentsPage extends Component {
     );
   }
 }
+
+TournamentsPage.defaultProps = {
+  tournamentData: null,
+  changeView: null,
+};
+
+TournamentsPage.propTypes = {
+  tournamentData: PropTypes.arrayOf(PropTypes.shape({
+    tournamentId: PropTypes.any,
+    tournamentName: PropTypes.string,
+    tournamentDate: PropTypes.date,
+    tournamentType: PropTypes.string,
+    challongeUrl: PropTypes.string,
+    state: PropTypes.string,
+    listOfParticipants: PropTypes.arrayOf(PropTypes.string),
+  })),
+  changeView: PropTypes.func,
+};
