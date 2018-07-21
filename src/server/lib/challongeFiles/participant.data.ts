@@ -5,6 +5,7 @@ export class ParticipantData {
   firstAttendedDate: Date;
   lastAttendedDate: Date;
   active: Boolean;
+  highestPlacing: number = 0;
   totalNumWins: number = 0;
   totalNumLosses: number = 0;
   totalNumSets: number = 0;

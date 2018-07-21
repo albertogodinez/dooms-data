@@ -29,6 +29,9 @@ const ParticipantCard = (props) => {
         {props.state.selectedParticipant.winningPercentage.toPrecision(4)}%
       </p>
       <p>
+        <strong>Top Placing:</strong> {props.state.selectedParticipant.highestPlacing}
+      </p>
+      <p>
         <strong>Total Sets:</strong> {props.state.selectedParticipant.totalNumSets}
       </p>
       <p>
@@ -115,6 +118,12 @@ export default class ParticipantProfilesPage extends Component {
         sorter: (a, b) => a.totalNumTournaments - b.totalNumTournaments,
       },
       {
+        title: 'Top Placing',
+        dataIndex: 'highestPlacing',
+        key: 'totalNumSets',
+        sorter: (a, b) => a.highestPlacing - b.highestPlacing,
+      },
+      {
         title: 'Total Wins',
         dataIndex: 'totalNumWins',
         key: 'totalNumWins',
@@ -132,12 +141,6 @@ export default class ParticipantProfilesPage extends Component {
         key: 'winningPercentage',
         render: winningPercentage => `${winningPercentage.toPrecision(4)}%`,
         sorter: (a, b) => a.winningPercentage - b.winningPercentage,
-      },
-      {
-        title: 'Total Sets',
-        dataIndex: 'totalNumSets',
-        key: 'totalNumSets',
-        sorter: (a, b) => a.totalNumSets - b.totalNumSets,
       },
     ];
     return (

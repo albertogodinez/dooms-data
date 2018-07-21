@@ -126,7 +126,7 @@ export class ChallongeCaller {
           });
         })
         .then(res => {
-          let participantProfiles = this.handleParticipantProfiles();
+          let participantProfiles = this.createParticipantProfiles();
           resolve(participantProfiles);
         })
         .catch(error => {
@@ -152,8 +152,6 @@ export class ChallongeCaller {
     });
   }
 
-  //need to go through existing participants and see if gamertag exists
-  //if it does, then need to add it to that ParticipantData
   private handleParticipants(responseData: any) {
     console.log('converting challonge response to ParticipantData');
     responseData.map(participant => {
@@ -161,6 +159,7 @@ export class ChallongeCaller {
       pd.participantId = participant.participant.id;
       pd.gamertag = participant.participant.name;
       pd.totalNumTournaments++;
+      pd.highestPlacing = participant.participant.final_rank;
       this.participantMap.set(pd.participantId, pd);
     });
   }
@@ -186,7 +185,7 @@ export class ChallongeCaller {
     return this.tournamentList;
   }
 
-  handleParticipantProfiles() {
+  createParticipantProfiles() {
     console.log('obtaining participant profiles');
     this.matchesMap.forEach(match => {
       // console.log('matchId: ' + match.matchId);
@@ -202,19 +201,6 @@ export class ChallongeCaller {
 
       pdWinner.winningPercentage = (pdWinner.totalNumWins / pdWinner.totalNumSets) * 100;
       pdLoser.winningPercentage = (pdLoser.totalNumWins / pdLoser.totalNumSets) * 100;
-
-      // if (pdWinner.gamertag === 'Jocamo') {
-      //   console.log(
-      //     'winning percentage: ' +
-      //       pdWinner.winningPercentage +
-      //       '   totalSets: ' +
-      //       pdWinner.totalNumSets +
-      //       '  totalWins: ' +
-      //       pdWinner.totalNumWins +
-      //       '    totalLosses: ' +
-      //       pdWinner.totalNumLosses,
-      //   );
-      // }
 
       this.participantMap.set(match.winnerId, pdWinner);
       this.participantMap.set(match.loserId, pdLoser);
@@ -238,6 +224,10 @@ export class ChallongeCaller {
         seen.get(seenKey).totalNumTournaments += participant.totalNumTournaments;
         seen.get(seenKey).winningPercentage =
           (seen.get(seenKey).totalNumWins / seen.get(seenKey).totalNumSets) * 100;
+        seen.get(seenKey).highestPlacing =
+          seen.get(seenKey).highestPlacing < participant.highestPlacing
+            ? seen.get(seenKey).highestPlacing
+            : participant.highestPlacing;
         // console.log('combined player: ' + JSON.stringify(seen.get(seenKey)));
       } else {
         let tempKey: string = String(participant.gamertag.toUpperCase().trim());
