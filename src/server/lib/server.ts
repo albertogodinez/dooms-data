@@ -1,6 +1,4 @@
 import app from './app';
-import * as fs from 'fs';
-import { promisify } from 'util';
 
 const express = require('express');
 const path = require('path');

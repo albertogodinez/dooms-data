@@ -1,15 +1,40 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { Request, Response } from 'express';
+import * as cors from 'cors';
+import { Model, transaction } from 'objection';
+import * as Knex from 'knex';
+
 import { ChallongeCaller } from './challongeFiles/challongeCaller';
 import { ErrorHandler } from './errorHandler';
-import * as cors from 'cors';
+import User from './models/user';
 
-const path = require('path');
+// Note: Knex's PostgreSQL client allows you to set the initial
+// search path for each connection automatically using an
+// additional option "searchPath" as shown below
+// var knex = require('knex')({
+//   client: 'pg',
+//   connection: process.env.PG_CONNECTION_STRING,
+//   searchPath: ['knex', 'public'],
+// });
+const knexConfig = require('../../../knexfile');
+// Initialize knex.
+export const knex = Knex(knexConfig.development);
+// Create or migrate:
+knex.migrate.latest();
+
+// Bind all Models to a knex instance. If you only have one database in
+// your server this is all you have to do. For multi database systems, see
+// the Model.bindKnex method.
+Model.knex(knex);
+
+// Unfortunately the express-promise-router types are borked. Just require():
+// const router = require('express-promise-router')(); // DONT THINK I NEED THIS
 
 class App {
   private challonge = new ChallongeCaller();
   private errorHandler = new ErrorHandler();
+  public app: express.Application;
 
   constructor() {
     this.app = express();
@@ -17,16 +42,38 @@ class App {
     this.routes();
   }
 
-  public app: express.Application;
-
   private config(): void {
     this.app.use(bodyParser.json());
-    this.app.use(bodyParser.urlencoded({ extended: false }));
+    this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(cors());
   }
 
   private routes(): void {
     const router = express.Router();
+
+    /**
+     * If all you want to do is insert a single person
+     * `insertGraph` and `allowInsert` can be replaced with
+     * `insert()`
+     */
+    router.post('/api/signUp/', async (req: Request, res: Response) => {
+      console.log('username: ' + req.params.username);
+      console.log('password: ' + req.params.password);
+      console.log('email: ' + req.params.email);
+
+      const graph = req.body;
+      console.log('request body: ' + JSON.stringify(graph));
+      const insertedGraph = await transaction(User.knex(), trx => {
+        return (
+          User.query(trx)
+            // For security reasons, limit the relations that can be inserted.
+            .allowInsert('[username, password, email]')
+            .insertGraph(graph)
+        );
+      });
+
+      res.send(insertedGraph);
+    });
 
     router.get('/api/tournaments/:username/:apiKey', (req: Request, res: Response) => {
       console.log('requesting tournaments');
