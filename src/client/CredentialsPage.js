@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import { Row, Col, Form, Icon, Input, Button } from 'antd';
-import PropTypes from 'prop-types';
+import { Button, Col, Form, Icon, Input, Row } from "antd";
+import axios from "axios";
+import PropTypes from "prop-types";
+import React, { Component } from "react";
 
 const FormItem = Form.Item;
 
@@ -13,8 +13,8 @@ export default class CredentialsPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
-      apiKey: ''
+      username: "",
+      apiKey: ""
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.setData = this.setData.bind(this);
@@ -27,8 +27,8 @@ export default class CredentialsPage extends Component {
 
   setData() {
     this.setState({
-      username: 'ATXSanctumWeeklies',
-      apiKey: 'WEuxMDp0NG3rHxWMjYpURprGhWUyEgtTlGEm251I'
+      username: "ATXSanctumWeeklies",
+      apiKey: "WEuxMDp0NG3rHxWMjYpURprGhWUyEgtTlGEm251I"
     });
   }
 
@@ -42,20 +42,20 @@ export default class CredentialsPage extends Component {
         });
         // this.state.username = values.username;
         // this.state.apiKey = values.apiKey;
-        console.log('Received values of form: ', values);
+        console.log("Received values of form: ", values);
       }
     });
 
     const rootUrl =
-      process.env.NODE_ENV === 'production'
-        ? '/api/'
-        : 'http://localhost:4040/api/';
+      process.env.NODE_ENV === "production"
+        ? "/api/"
+        : "http://localhost:4040/api/";
     axios({
       url: `${rootUrl}tournaments/${this.state.username}/${this.state.apiKey}`,
-      method: 'get',
+      method: "get",
       headers: {
-        begDate: '2018-01-01', // don't hard code this in the future
-        endDate: '2018-07-01' // don't hard code this in the future
+        begDate: "2019-01-01", // don't hard code this in the future
+        endDate: "2019-04-01" // don't hard code this in the future
       }
     })
       .then(response => {
@@ -79,42 +79,42 @@ export default class CredentialsPage extends Component {
 
     // Only show error after a field is touched.
     const userNameError =
-      isFieldTouched('username') && getFieldError('username');
-    const apiError = isFieldTouched('apiKey') && getFieldError('apiKey');
+      isFieldTouched("username") && getFieldError("username");
+    const apiError = isFieldTouched("apiKey") && getFieldError("apiKey");
     return (
       <div>
         <Row>
           <Col span={8} offset={8}>
             <Form layout="inline" onSubmit={this.handleSubmit}>
               <FormItem
-                validateStatus={userNameError ? 'error' : ''}
-                help={userNameError || ''}
+                validateStatus={userNameError ? "error" : ""}
+                help={userNameError || ""}
               >
-                {getFieldDecorator('username', {
+                {getFieldDecorator("username", {
                   rules: [
-                    { required: true, message: 'Please input your username' }
+                    { required: true, message: "Please input your username" }
                   ]
                 })(
                   <Input
                     prefix={
-                      <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
+                      <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
                     }
                     placeholder="Username"
                   />
                 )}
               </FormItem>
               <FormItem
-                validateStatus={apiError ? 'error' : ''}
-                help={apiError || ''}
+                validateStatus={apiError ? "error" : ""}
+                help={apiError || ""}
               >
-                {getFieldDecorator('apiKey', {
+                {getFieldDecorator("apiKey", {
                   rules: [
-                    { required: true, message: 'Please input your API key' }
+                    { required: true, message: "Please input your API key" }
                   ]
                 })(
                   <Input
                     prefix={
-                      <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
+                      <Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />
                     }
                     placeholder="API Key"
                   />
