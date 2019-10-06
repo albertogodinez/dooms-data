@@ -27,8 +27,8 @@ export default class CredentialsPage extends Component {
 
   setData() {
     this.setState({
-      username: "ATXSanctumWeeklies",
-      apiKey: "WEuxMDp0NG3rHxWMjYpURprGhWUyEgtTlGEm251I"
+      username: "",
+      apiKey: ""
     });
   }
 
